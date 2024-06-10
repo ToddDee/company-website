@@ -39,7 +39,7 @@ pipeline {
             steps {
                 script {
                     // Push Docker image to DockerHub
-                    docker.withRegistry('https://index.docker.io/v1/', 'DOCKER_HUB_CREDENTIALS') {
+                    docker.withRegistry('https://index.docker.io/v1/', env.DOCKER_HUB_CREDENTIALS) {
                         docker.image('company-website:v1.0.0').push()
                     }
                 }
