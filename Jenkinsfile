@@ -14,9 +14,16 @@ pipeline {
             }
         }
 
-        stage('Initialize'){
-            def dockerHome = tool 'myDocker'
-            env.PATH = "${dockerHome}/bin:${env.PATH}"
+        stage('Initialize') {
+            steps {
+                script {
+                    // Retrieve Docker tool installation
+                    def dockerHome = tool 'myDocker'
+
+                    // Update PATH environment variable
+                    env.PATH = "${dockerHome}/bin:${env.PATH}"
+                }
+            }
         }
 
         stage('Build Docker Image') {
