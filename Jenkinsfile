@@ -2,8 +2,9 @@ pipeline {
     agent any
 
     environment {
-        // Define Docker Hub credentials
-        DOCKER_HUB_CREDENTIALS = credentials('docker-hub-credentials')
+        DOCKER_CREDENTIALS_ID = 'docker-hub-credentials' // Replace with your actual credentials ID
+        DOCKER_IMAGE_NAME = 'td7165/company-website' // Replace with your Docker Hub username and image name
+        DOCKER_IMAGE_TAG = 'v1.0.0' // You can use a dynamic tag, e.g., 'v1.0.${BUILD_NUMBER}'
     }
 
     stages {
@@ -30,7 +31,17 @@ pipeline {
             steps {
                 script {
                     // Build Docker image with specified tag
-                    docker.build('company-website:v1.0.0')
+                    docker.build('td7165/company-website:v1.0.0')
+                }
+            }
+        }
+
+        stage('Login to Docker Hub') {
+            steps {
+                script {
+                    withCredentials([usernamePassword(credentialsId: env.DOCKER_CREDENTIALS_ID, usernameVariable: 'DOCKERHUB_USERNAME', passwordVariable: 'DOCKERHUB_PASSWORD')]) {
+                        sh 'docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD'
+                    }
                 }
             }
         }
@@ -38,10 +49,8 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 script {
-                    // Push Docker image to DockerHub
-                    docker.withRegistry('https://index.docker.io/v1/', env.DOCKER_HUB_CREDENTIALS) {
-                        docker.image('company-website:v1.0.0').push()
-                    }
+                    // Push Docker image to Docker Hub
+                    sh "docker push ${env.DOCKER_IMAGE_NAME}:${env.DOCKER_IMAGE_TAG}"
                 }
             }
         }
@@ -50,7 +59,7 @@ pipeline {
             steps {
                 script {
                     // Deploy the image to Minikube
-                    kubectl('set image deployment/your-deployment your-container=company-website:v1.0.0 --record')
+                    kubectl('set image deployment/your-deployment your-container=td7165/company-website:v1.0.0 --record')
                 }
             }
         }
