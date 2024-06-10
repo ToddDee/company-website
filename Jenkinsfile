@@ -27,12 +27,14 @@ pipeline {
             }
         }
 
-        stage('Install kubectl') {
+       stage('Install kubectl') {
             steps {
                 script {
                     sh 'curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"'
                     sh 'chmod +x kubectl'
-                    sh 'mv kubectl /usr/local/bin/kubectl'
+                    sh 'mkdir -p ~/bin'
+                    sh 'mv kubectl ~/bin/kubectl'
+                    sh 'export PATH=$PATH:~/bin'
                 }
             }
         }
