@@ -10,9 +10,9 @@ pipeline {
   stages {
 
     stage('Checkout Source') {
-      steps {
-        git 'https://github.com/ToddDee/company-website.git'
-      }
+        steps {
+            git branch: 'Todd_David', url: 'https://github.com/ToddDee/company-website.git'
+        }
     }
 
     stage('Build image') {
