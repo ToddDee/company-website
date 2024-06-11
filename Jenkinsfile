@@ -36,12 +36,14 @@ pipeline {
       }
     }
 
-    stage('Deploying App to Kubernetes') {
-      steps {
-        script {
-          kubernetesDeploy(configs: "deploymentservice.yaml", kubeconfigId: "kubernetes")
+    stage('Integrate Remote k8s with Jenkins') {
+        steps {
+            withKubeCredentials(kubectlCredentials: [[caCertificate: '', clusterName: 'sample', contextName: '', credentialsId: 'SECRET_TOKEN', namespace: 'default', serverUrl: 'https://192.168.49.2:8443']]) {
+                sh 'kubectl get nodes'
+                sh 'kubectl config current-context'
+                sh 'kubectl apply -f deploymentservice.yaml'
+            }
         }
-      }
     }
 
   }
